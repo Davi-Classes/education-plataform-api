@@ -1,6 +1,7 @@
 import uuid
 from typing import Optional
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
 
@@ -47,6 +48,15 @@ app = FastAPI(title="Education Plataform API")
 @app.get("/courses")
 def get_courses(search: Optional[str] = None) -> list[Course]:
     if search is not None:
-        return [course for course in courses if search in course.title]
+        return [course for course in courses if search.lower() in course.title.lower()]
 
     return courses
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
